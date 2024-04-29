@@ -32,50 +32,37 @@ const Carousel = () => {
     const [buttonsEnabled, setButtonsEnabled] = useState(Array(datosCarousel.length).fill(true));
     const [showAnimation, setShowAnimation] = useState(false);
     const [score, setScore] = useState(0);
-    const [isLastSlide, setIsLastSlide] = useState(false); // Mover la declaración aquí
-
-
 
     const flatListRef = useRef(null);
 
 
     const statusBarHeight = Constants.statusBarHeight;
 
-   
+    // Función para cambiar al siguiente elemento del carrusel
     const goToNextItem = () => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % datosCarousel.length);
     };
 
 
-const handleSeleccionTexto = (texto, respuestaCorrecta, index) => {
-    const isCorrect = texto === respuestaCorrecta;
-    const updatedOptions = [...selectedOptions];
-    updatedOptions[index] = { option: texto, isCorrect };
-    setSelectedOptions(updatedOptions);
-    setShowAnimation(isCorrect);
-    const updatedButtons = [...buttonsEnabled];
-    updatedButtons[index] = false;
-    setButtonsEnabled(updatedButtons);
-    if (!isCorrect) {
-        // Mostrar la respuesta correcta
-        const correctIndex = item.resolve1 === item.btn1 ? 0 :
-                            item.resolve1 === item.btn2 ? 1 :
-                            item.resolve1 === item.btn3 ? 2 :
-                            item.resolve1 === item.btn4 ? 3 : -1;
-        const updatedOptionsWithCorrect = [...updatedOptions];
-        updatedOptionsWithCorrect[index] = { option: item.resolve1, isCorrect: true };
-        setSelectedOptions(updatedOptionsWithCorrect);
-    }
-    if (isCorrect) {
-        playSound(true);
-        setShowAnimation(true);
-        setTimeout(() => setShowAnimation(false), 2000);
-        setScore(prevScore => prevScore + 1);
-        goToNextItem();
-    } else {
-        playSound(false);
-    }
-};
+    const handleSeleccionTexto = (texto, respuestaCorrecta, index) => {
+        const isCorrect = texto === respuestaCorrecta;
+        const updatedOptions = [...selectedOptions];
+        updatedOptions[index] = { option: texto, isCorrect };
+        setSelectedOptions(updatedOptions);
+        setShowAnimation(isCorrect);
+        const updatedButtons = [...buttonsEnabled];
+        updatedButtons[index] = false;
+        setButtonsEnabled(updatedButtons);
+        if (isCorrect) {
+            playSound(true);
+            setShowAnimation(true);
+            setTimeout(() => setShowAnimation(false), 2000);
+            setScore(prevScore => prevScore + 1);
+            goToNextItem();
+        } else {
+            playSound(false);
+        }
+    };
 
     const handleNextSlide = () => {
 
@@ -163,46 +150,38 @@ const handleSeleccionTexto = (texto, respuestaCorrecta, index) => {
         );
     };
 
-    useEffect(() => {
-        setIsLastSlide(currentIndex === datosCarousel.length - 1);
-    }, [currentIndex]);
-
     return (
         <View style={[styles.container, { paddingTop: statusBarHeight }]}>
-        <StatusBar translucent backgroundColor="transparent" />
-        <ImageBackground source={require('../../assets/Elementos_estáticos/Fondo_RutaIterg_720x1600px_ExploraxV2-0.png')} style={{ width: '100%', height: '100%' }}>
+            <StatusBar translucent backgroundColor="transparent" />
+            <ImageBackground source={require('../../assets/Elementos_estáticos/Fondo_RutaIterg_720x1600px_ExploraxV2-0.png')} style={{ width: '100%', height: '100%' }}>
 
-            <Encabezado />
-            <FlatList
-                ref={flatListRef}
-                data={datosCarousel}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                pagingEnabled
-                keyExtractor={(item) => item.id}
-                renderItem={renderSlide}
-                onScrollToIndexFailed={() => { }}
-                getItemLayout={(data, index) => ({
-                    length: screenWidth,
-                    offset: screenWidth * index,
-                    index,
-                })}
-                initialScrollIndex={0}
-            />
-            <View style={styles.pagination}>
-                {isLastSlide && (
-                    <TouchableOpacity onPress={handleNavigateToNextPage}>
-                        <StyledText textMission>Ir a la siguiente página</StyledText>
-                    </TouchableOpacity>
-                )}
-                <Text>  PUNTEO  {score} </Text>
-                <StyledText textMission>{' > > > >'} Desliza {'< < < <'}</StyledText>
+                <Encabezado />
+                <FlatList
+                    ref={flatListRef}
+                    data={datosCarousel}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    pagingEnabled
+                    keyExtractor={(item) => item.id}
+                    renderItem={renderSlide}
+                    onScrollToIndexFailed={() => { }}
+                    getItemLayout={(data, index) => ({
+                        length: screenWidth,
+                        offset: screenWidth * index,
+                        index,
+                    })}
+                    initialScrollIndex={0}
+                />
+                <View style={styles.pagination}>
+                    <StyledText textMission>{'Puntaje: ' + score}</StyledText>
 
-            </View>
+                    <StyledText textMission>{' > > > >'} Desliza {'< < < <'}</StyledText>
 
-        </ImageBackground>
+                </View>
 
-    </View>
+            </ImageBackground>
+
+        </View>
     );
 };
 
